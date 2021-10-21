@@ -1,0 +1,60 @@
+
+
+
+it's pretty hard to understand all of this at once. so, use the sample input and output as your guide! (yeah hannah you better)
+sample input:  
+3
+57 120 87
+200 100 150
+2 141 135
+output:
+8
+import java.util.*;
+import java.io.*;
+public class green {
+ 
+    public static void main(String[] args) throws IOException {
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        int n = Integer.parseInt(in.readLine());
+        int[][] pasture = new int[n][n];
+        for (int y = 0; y < n; y++) {
+            StringTokenizer tokenizer = new StringTokenizer(in.readLine());
+            for (int x = 0; x < n; x++) {
+                pasture[y][x] = Integer.parseInt(tokenizer.nextToken());
+            }
+        }
+        int[][] sumsAbove = new int[n][n + 1];
+        int[][] sumsAtLeast = new int[n][n + 1];
+        for (int y = 0; y < n; y++) {
+            for (int x = 0; x < n; x++) {
+                sumsAbove[y][x + 1] = sumsAbove[y][x] + (pasture[y][x] > 100 ? 1 : 0);
+                //The value will be 1 when the cell is greater than 100 (star)
+                //The value will be 0 when the cell is less than or equal to 100 
+                sumsAtLeast[y][x + 1] = sumsAtLeast[y][x] + (pasture[y][x] >= 100 ? 1 : 0);
+                //The value will be 1 when the cell is greater or equal to 100 (star)
+                //The value will be 0 when the value is less than 100 
+                
+                //When values from sumsBelow and sumsAtMost is equal to the difference of its index position of its range, we can use the 
+                //equation that we have from the explanation. # minimum 100 = #minimum at least 100
+                // - #minimum at least 101 (greater than 100)
+            }
+        }
+        long answer = 0;
+        for (int x1 = 0; x1 < n; x1++) { //x1 is the index position of a range of numbers
+            for (int x2 = x1 + 1; x2 <= n; x2++) { // x2 is the next index position of a range of numbers
+                int y1 = -1;
+                int y2 = -1;
+                for (int y0 = 0; y0 < n; y0++) {
+                    while (y1 < n && (y1 < y0 || sumsAtLeast[y1][x2] - sumsAtLeast[y1][x1] == x2 - x1)) {
+                        y1++;
+                    }
+                    while (y2 < n && (y2 < y0 || sumsAbove[y2][x2] - sumsAbove[y2][x1] == x2 - x1)) {
+                        y2++;
+                    }
+                    answer += y1 - y2;
+                }
+            }
+        }
+        System.out.println(answer);
+    }
+}
