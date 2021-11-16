@@ -1,0 +1,108 @@
+//silver version INCOMPLETE
+import java.util.*;
+import java.io.*;
+public class fairphoto {
+	static int n;
+	public static void main(String[] args) throws FileNotFoundException {
+		// TODO Auto-generated method stub
+		Scanner in = new Scanner(new File("fairphoto.in"));
+		n = in.nextInt();
+		ArrayList<Cow>cows = new ArrayList<>();
+		ArrayList<Cow> evens = new ArrayList<>(); //this will store even ps
+		ArrayList<Cow> odd = new ArrayList<>();// this will store odd ps 
+		for(int i = 0; i < n; i++)
+		{
+			cows.add(new Cow(in.nextInt(), -2, in.next().equals("W") ? 1 : -1));
+		}
+		in.close();
+		int result = 0;
+		//Loop. First see where PS should belong (check first if in ascneding order, then if even or odd)
+		//Update PS (use lambda function)
+		//Calculate max distance
+		int cumSum = 0;
+		Collections.sort(cows);
+		for(Cow i : cows) System.out.println("Cow position: " + i.oPos + " cow value: " + i.value);
+		for(int i = 1; i <= n; i++) {
+			//System.out.println(cumSum + " when i is " + i);
+			if( cumSum % 2 == 0) {
+				//System.out.println("this ran 1");
+				if(evens.isEmpty() ||  evens.get(evens.size()-1).ps <= cumSum) {
+				//	System.out.println("Opos: " + cows.get(i).oPos + " cumSum: " + cumSum + " W or S: " + cows.get(i).value);
+					evens.add(new Cow(cows.get(i-1).oPos, cumSum, cows.get(i-1).value));
+				}
+			}else {
+				//System.out.println("this ran 2");
+				if( odd.isEmpty() ||  odd.get(odd.size()-1).ps<= cumSum) {
+				//	System.out.println("Opos: " + cows.get(i).oPos + " cumSum: " + cumSum + " W or S: " + cows.get(i).value);
+					odd.add(new Cow(cows.get(i-1).oPos, cumSum, cows.get(i-1).value));
+				}
+			}
+			//update
+			cumSum += cows.get(i-1).value;
+			if(cumSum % 2 == 1) {
+				for(int j = 0; j < odd.size(); j++) {
+					if(!odd.isEmpty() && cumSum > odd.get(j).ps && odd.get(j).ps >= 0 ) {
+						result = Math.max(result, cows.get(i).oPos - odd.get(j).oPos);
+						//System.out.println("this ran 3");
+						//System.out.println("Opos: this cow  " + cows.get(i).oPos + " Opos: checked cow " + odd.get(j).oPos );
+						break;
+						
+					}
+				}
+			}else {
+				for(int j = 0; j < evens.size(); j++) {
+					if(!evens.isEmpty() && cumSum > evens.get(j).ps && evens.get(j).ps >= 0 ) {
+						result = Math.max(result, cows.get(i).oPos - evens.get(j).oPos);
+					//System.out.println("this ran 4");
+						//System.out.println("Opos: this cow  " + cows.get(i).oPos + " Opos: checked cow " + evens.get(j).oPos );
+						break;
+					}
+				}
+			}
+			
+			
+			
+		}
+		for(Cow x : evens) System.out.println("cow oPos: " +  x.oPos + " cow cumSum: " + x.ps + " cow value: " + x.value);
+		for(Cow x : odd) System.out.println("cow oPos: " +  x.oPos + " cow cumSum: " + x.ps + " cow value: " + x.value);
+		PrintWriter out = new PrintWriter(new File("fairphoto.out"));
+		out.println(result);
+		System.out.println(result);
+		out.close();
+	}
+	
+	static class Cow implements Comparable<Cow>{
+		int oPos;
+		int ps = 0;
+		int value = 0;
+		Cow(int o, int ps, int val){
+			oPos = o;
+			value = val;
+			this.ps = ps;
+		}
+		public int compareTo(Cow other) {
+			return this.oPos - other.oPos;
+		}
+		
+	}
+
+}
+
+/* Outline:
+Use the concept of prefix sum and binary search.
+Learn how to use lambda and Token scanner
+
+We have to find a range of cows where the cows' number sum is a nonnegative even number
+Given a range of cows with W, S, we will find the prefix sum, with W having a value of 1
+and S having a value of -1. Then, we use two difference pairs for even and odd prefix sums. 
+We loop through the array of cows, calculate prefix sum. At each prefix sum, we using binary search to
+find all possible positions of prefix sum which is LESS than our prefix sum. Then, we find the range
+with the biggest size. 
+
+Let us create an ArrayList of Cows (prefix sum and pos in the problem).
+Let us create two ArrayList of Cows with either even or odd prefix sums.
+Let us create a binary function to find the position where PS is still less than the target PS (?)
+Let us loop through from 0, to that position to find the max distance of our value ij
+
+
+*/
