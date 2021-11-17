@@ -1,7 +1,8 @@
+
 //silver version INCOMPLETE
 import java.util.*;
 import java.io.*;
-public class fairphoto {
+ class fairphoto {
 	static int n;
 	public static void main(String[] args) throws FileNotFoundException {
 		// TODO Auto-generated method stub
@@ -105,4 +106,95 @@ Let us create a binary function to find the position where PS is still less than
 Let us loop through from 0, to that position to find the max distance of our value ij
 
 
+*/
+
+/*
+import java.io.*;
+import java.util.*;
+class Main {
+  static int n;
+  static Cow[] cows;
+  public static void main(String[] args) throws FileNotFoundException {
+    Scanner in = new Scanner(new File("fairphoto.in"));
+    n = in.nextInt();
+    cows = new Cow[n];
+    for(int i = 0; i < n; i++){
+        int heehee = in.nextInt();
+        String ah = in.next();
+        if (ah.equals("W")){
+         cows[i] = new Cow(heehee, 1);
+        }else cows[i] = new Cow(heehee, -1);
+    }
+    Arrays.sort(cows);
+    //for(Cow i : cows) System.out.println(i.oPos);
+    in.close();
+
+    int result = 0;
+    int ps = 0;
+    ArrayList<Cow> even = new ArrayList<>(); //even ps
+    ArrayList<Cow> odd = new ArrayList<>(); //odd ps
+    for(int i = 1; i <= n; i++){
+      ps = ps + cows[i-1].value;
+      System.out.println(ps);
+      if(even.isEmpty() || ps % 2 == 0){
+        //add to even list
+        Cow o = new Cow(cows[i-1].oPos, cows[i-1].value);
+        o.ps = ps;
+        even.add(o);
+        int counter = binarySearch(odd, ps);
+        while(!odd.isEmpty() && counter >=0 && odd.get(counter).ps <= ps){
+          result = Math.max(result, o.oPos - odd.get(counter).oPos );
+          counter--; 
+        }
+      }else{
+        //add to odd list
+        Cow o = new Cow(cows[i-1].oPos, cows[i-1].value);
+        o.ps = ps;
+        odd.add(o);
+        int counter = binarySearch(even, ps);
+        while(!even.isEmpty() && counter >= 0 && even.get(counter).ps <= ps){
+          result = Math.max(result, o.oPos - even.get(counter).oPos );
+          counter--; 
+        }
+      }
+    }
+    PrintWriter out = new PrintWriter(new File("fairphoto.out"));
+    out.println(result);
+    System.out.println(result);
+    out.close();
+  }
+
+  static int binarySearch(ArrayList<Cow> moo, int targetPs){
+    //find most right position with ps less than or equal to current ps
+    //TODO check boundaries afterschool 
+    if(moo.isEmpty()) return 0;
+    int left = 0;
+    int right = moo.size();
+    int mid = (left + right)/2; 
+    //TODO: while loop
+    while(left < right){
+      if(moo.get(mid).ps <= targetPs){
+        //TOOD: change if statement to same position 
+        if(mid + 1 < moo.size() && moo.get(mid + 1).ps > targetPs) return mid+1;
+        left = mid;
+      }else{ //moo.get(mid).ps > targetPs
+        mid = right; 
+      }
+    }
+      return 0;
+  }
+
+  static class Cow implements Comparable<Cow>{
+    int oPos, value;
+    int ps; //IODO: initiate this 
+    Cow(int o, int val){
+        oPos = o;
+        //TODO: change into lambda function later
+        value = val; 
+    }
+    public int compareTo(Cow other){
+      return this.oPos - other.oPos;
+    }
+  }
+}
 */
