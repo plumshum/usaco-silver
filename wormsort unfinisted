@@ -1,0 +1,101 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ *
+ * @author lenovo-flex-5
+ */
+import java.util.*;
+import java.io.*;
+public class wormsort {
+    static StreamTokenizer in;
+    static PrintWriter out;
+    //create function based on what data type your input is
+    static int nextInt() throws Exception{
+        in.nextToken();
+        return (int) in.nval;
+    }
+    public static void main(String[] args) throws Exception{
+        in = new StreamTokenizer(new BufferedReader(new FileReader("wormsort.in"))); 
+        //Stream,Buff, FileReader 
+        //for stdin, instead of FileREader it will be InputStreamReader
+        //System.out.println(nextInt());
+        int n = nextInt();
+        int w = nextInt(); //# of wormholes
+        int totalO = 0; //if completely ordered, this value will be n
+        ArrayList<Node> cows = new ArrayList<>();
+        for(int i = 1; i <= n; i++){
+            cows.add(new Node(nextInt(), i));
+            if(cows.get(i-1).currPos == cows.get(i-1).origPos){
+                cows.get(i-1).ordered = true; //TODO: can remove later 
+                totalO ++;
+            }
+        }
+        int[] minL = new int[w]; //store all the edge lengths
+        int result = Integer.MIN_VALUE; //final answer
+        for(int i = 0; i < w; i++){
+            int cow1 = nextInt() - 1;
+            int cow2 = nextInt() - 1;
+            int weight = nextInt();
+            cows.get(cow1).neighbors.put(cows.get(cow2), weight);
+            cows.get(cow2).neighbors.put(cows.get(cow1), weight);
+            minL[i] = weight;
+        }
+        Arrays.sort(minL); //sort minL
+        //for(int i : minL) System.out.println(i);
+        for(int i = 0; i < cows.size(); i++){
+          //  System.out.println("new step");
+            int left = 0;
+            int right = n;
+            int minLength = 0;
+            while(left < right){
+                int mid = (left + right)/2;
+                minLength = minL[mid];
+              //  System.out.println("Left: " + left + " Right: " + right + " mid: " + mid + " minLength: " + minLength);
+                boolean[] visited = new boolean[n + 1];
+                if(dfs(minLength, cows.get(i), visited)+ totalO == n){
+                    left = mid+1;
+                }else{
+                    right = mid;
+                }
+            }
+            result = Math.max(result, minL[left]);
+        } 
+        System.out.println(result);
+        out = new PrintWriter( new File("wormsort.out"));
+        out.println(result);
+        out.close();
+    }
+    static int dfs(int minLength, Node i, boolean[] v){
+        int ret = 1;
+        if(v[i.origPos]) return 0;
+        if(i.ordered) return 0;
+        v[i.origPos] = true;
+        for( Map.Entry<Node, Integer> entry : i.neighbors.entrySet()){ //barely used Map entry
+            if(entry.getValue() < minLength) return 0;
+            else ret += dfs(minLength, entry.getKey(), v);
+        }
+        return ret;
+    }
+    
+    static class Node{
+        int currPos, origPos;
+        boolean ordered = false;
+        Map<Node, Integer> neighbors = new HashMap<>();
+        //Key: the other Node that its connected to
+        // Integer: width of wormhole
+        Node(int c, int o){
+            currPos = c;
+            origPos = o;
+        }
+    }
+}
+
+/*
+Try using StreamTokenizer
+Pretty unintellgieble way to figure out if all sorted is if
+return ret += node that's already ordered if equal to #node then true 
+*/
